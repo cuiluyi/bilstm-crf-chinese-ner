@@ -7,7 +7,6 @@ requires-python = ">=3.10"
 dependencies = [
     "loguru>=0.7.3",
     "numpy>=2.2.6",
-    "pytorch-crf>=0.7.2",
     "scikit-learn>=1.7.2",
     "torch>=2.9.0",
 ]

@@ -2,7 +2,8 @@ from pathlib import Path
 
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
+from torch.optim import Optimizer, Adam
+from torch.utils.data import DataLoader
 from loguru import logger
 
 from BiLSTM import BiLSTM
@@ -12,37 +13,24 @@ from ner_dataset import NERDataset, num_chars, num_labels
 def model_train(
     model: nn.Module,
     train_loader: DataLoader,
-    train_dataset: Dataset,
-    criterion,
-    optimizer,
+    optimizer: Optimizer,
     num_epochs: int,
 ):
     model.train()
     n_iterations = len(train_loader)
     for epoch in range(num_epochs):
-        running_loss, running_corrects = 0.0, 0
-        for i, (names, labels) in enumerate(train_loader):
-            outputs = model(names)
-            preds = torch.argmax(outputs, dim=-1)
-
-            loss = criterion(outputs, labels)
+        for i, (inputs, labels) in enumerate(train_loader):
+            loss, preds = model(inputs, labels)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            running_loss += loss.item()
-            running_corrects += (preds == labels).sum().item()
+            acc = (preds == labels).float().mean()
 
             logger.info(
-                f"Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_iterations}], Loss: {loss.item():.4f}"
+                f"Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_iterations}], Loss: {loss.item():.4f}, Accuracy: {acc.item()*100:.4f}%"
             )
-
-        epoch_loss = running_loss / n_iterations
-        epoch_acc = running_corrects / len(train_dataset)
-        logger.info(
-            f"Epoch [{epoch+1}/{num_epochs}] Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc*100:.4f}%"
-        )
     return model
 
 
@@ -64,14 +52,12 @@ if __name__ == "__main__":
 
     # Model train
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = Adam(model.parameters(), lr=0.001)
     model = model_train(
         model,
         train_loader,
-        train_dataset,
-        criterion,
         optimizer,
-        num_epochs=100,
+        num_epochs=10,
     )
 
     # Save model

@@ -1,20 +1,26 @@
 from pathlib import Path
 
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
+
 
 from BiLSTM import BiLSTM
 from ner_dataset import NERDataset, num_chars, num_labels
 
 
-def model_test(model, test_loader, test_dataset):
+def model_test(
+    model: nn.Module,
+    test_loader: DataLoader,
+    test_dataset: NERDataset,
+):
     num_correct = 0
     model.eval()
     with torch.no_grad():
-        for names, labels in test_loader:
-            output = model(names)
-            pred = torch.argmax(output, dim=-1)
-            num_correct += (pred == labels).sum().item()
+        for inputs, labels in test_loader:
+            _, preds = model(inputs, labels)
+
+            num_correct += (preds == labels).sum().item()
 
     print(f"Accuracy: {num_correct / len(test_dataset) * 100:.4f}%")
 
@@ -35,6 +41,6 @@ if __name__ == "__main__":
 
     # test dataloader: batch_size=1 for simplicity (avoid padding and truncating)
     test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=True)
-
+    
     # Model test
-    model_test(model, test_dataset)
+    model_test(model, test_loader, test_dataset)
