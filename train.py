@@ -15,11 +15,15 @@ def model_train(
     train_loader: DataLoader,
     optimizer: Optimizer,
     num_epochs: int,
+    save_dir: Path,
 ):
     model.train()
     n_iterations = len(train_loader)
     for epoch in range(num_epochs):
         for i, (inputs, labels) in enumerate(train_loader):
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+            
             loss, preds = model(inputs, labels)
 
             optimizer.zero_grad()
@@ -31,10 +35,15 @@ def model_train(
             logger.info(
                 f"Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_iterations}], Loss: {loss.item():.4f}, Accuracy: {acc.item()*100:.4f}%"
             )
+
+        # save model checkpoints
+        torch.save(model.state_dict(), save_dir / f"model_epoch_{epoch+1}.pth")
     return model
 
 
 if __name__ == "__main__":
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     # train dataset
     train_data_file = Path("data/train.txt")
     train_dataset = NERDataset(train_data_file)
@@ -48,18 +57,19 @@ if __name__ == "__main__":
         embed_size=128,
         hidden_size=128,
         output_size=num_labels,
-    )
+    ).to(device)
 
-    # Model train
+    # model train
     criterion = nn.CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=0.001)
+
+    save_dir=Path("ckpts/")
+    save_dir.mkdir(parents=True, exist_ok=True)
+
     model = model_train(
         model,
         train_loader,
         optimizer,
         num_epochs=10,
+        save_dir=Path("ckpts/"),
     )
-
-    # Save model
-    FILE = Path(__file__).parent / "model.pth"
-    torch.save(model.load_state_dict(), FILE)

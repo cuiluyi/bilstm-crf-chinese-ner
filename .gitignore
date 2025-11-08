@@ -1,6 +1,6 @@
-data/
 *.pth
 .vscode/
+*.log
 
 # Python-generated files
 __pycache__/

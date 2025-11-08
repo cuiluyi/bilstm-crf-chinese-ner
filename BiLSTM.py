@@ -30,7 +30,7 @@ class BiLSTM(nn.Module):
         x = self.embedding(x)  # (batch_size, seq_len, embed_size)
         x, _ = self.lstm(x)  # (batch_size, seq_len, hidden_size*2)
         x = self.linear(x)  # (batch_size, seq_len, output_size)
-        preds = torch.tensor(self.crf.decode(x))  # (batch_size, seq_len)
+        preds = torch.tensor(self.crf.decode(x), device=x.device)  # (batch_size, seq_len)
         if labels is None:
             return preds
         else:
