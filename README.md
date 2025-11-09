@@ -11,7 +11,7 @@ This repository provides a complete implementation of a Chinese NER system:
 
 ## Model Architecture
 
-![Model Architecture](https://tianchou.oss-cn-beijing.aliyuncs.com/img/20251109115328493.png)
+![Model Architecture](https://tianchou.oss-cn-beijing.aliyuncs.com/img/20251109123122181.png)
 
 ### Key Components
 
@@ -19,20 +19,33 @@ This repository provides a complete implementation of a Chinese NER system:
    Converts raw Chinese characters to dense vector representations via embedding layer.
 
 2. **Bidirectional LSTM**  
+   
    - Forward LSTM computes contextual features from left-to-right
+   
    - Backward LSTM computes contextual features from right-to-left  
+   
    - Hidden states concatenated for bidirectional context modeling:  
-     $$P_i = \text{softmax}(\tanh(W_c [F(h_i), B(h_i)]))$$
-
+     $$
+     P_i = \text{softmax}(\tanh(W_c [F(h_i), B(h_i)]))
+     $$
+     
+   
 3. **CRF Layer**  
    Performs sequence decoding with transition constraints:  
-   - Sequence score calculation:  
-     $$s(X,y) = \sum_{i=0}^{L} A_{y_i,y_{i+1}} + \sum_{i=1}^{L} P_{i,y_i}$$
-   - Viterbi algorithm for optimal label sequence prediction:  
-     $$y^* = \operatorname{argmax}_{\tilde{y} \in Y_X} s(X,\tilde{y})$$
-
+   
+   - Sequence score calculation: 
+     $$
+     s(X,y) = \sum_{i=0}^{L} A_{y_i,y_{i+1}} + \sum_{i=1}^{L} P_{i,y_i}
+     $$
+     
+   - Viterbi algorithm for optimal label sequence prediction: 
+     $$
+     y^* = \operatorname{argmax}_{\tilde{y} \in Y_X} s(X,\tilde{y})
+     $$
+   
 4. **Training Objective**  
    Cross-entropy loss with joint optimization of:  
+   
    - LSTM weights ($W1, U1, W2, U2$)  
    - Concatenation layer weights ($W_c$)  
    - CRF transition matrix ($A$)
