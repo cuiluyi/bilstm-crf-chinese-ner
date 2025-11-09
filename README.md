@@ -25,19 +25,25 @@ This repository provides a complete implementation of a Chinese NER system:
    - Backward LSTM computes contextual features from right-to-left  
    
    - Hidden states concatenated for bidirectional context modeling:  
-     $P_i = \text{softmax}(\tanh(W_c [F(h_i), B(h_i)]))$
+     $$
+     P_i = \text{softmax}(\tanh(W_c [F(h_i), B(h_i)]))
+     $$
      
    
-1. **CRF Layer**  
+3. **CRF Layer**  
    Performs sequence decoding with transition constraints:  
    
    - Sequence score calculation: 
-     $s(X,y) = \sum_{i=0}^{L} A_{y_i,y_{i+1}} + \sum_{i=1}^{L} P_{i,y_i}$
+     $$
+     s(X,y) = \sum_{i=0}^{L} A_{y_i,y_{i+1}} + \sum_{i=1}^{L} P_{i,y_i}
+     $$
      
    - Viterbi algorithm for optimal label sequence prediction: 
-     $y^* = \operatorname{argmax}_{\tilde{y} \in Y_X} s(X,\tilde{y})$
+     $$
+     y^* = \argmax_{\tilde{y} \in Y_X} s(X,\tilde{y})
+     $$
    
-2. **Training Objective**  
+4. **Training Objective**  
    Cross-entropy loss with joint optimization of:  
    
    - LSTM weights ($W1, U1, W2, U2$)  
