@@ -11,6 +11,7 @@ This repository provides a complete implementation of a Chinese NER system:
 - **Labels**: Supports 7 entity types in BIO format: `O, B-PER, I-PER, B-LOC, I-LOC, B-ORG, I-ORG`
 - **Training Pipeline**: End-to-end training with BPTT optimization and checkpoint management
 
+
 ## Model Architecture
 
 ![Model Architecture](https://tianchou.oss-cn-beijing.aliyuncs.com/img/20251109123122181.png)
