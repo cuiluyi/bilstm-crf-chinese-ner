@@ -16,6 +16,8 @@ This repository provides a complete implementation of a Chinese NER system:
 
 ## Model Architecture
 
+
+
 ![Model Architecture](https://tianchou.oss-cn-beijing.aliyuncs.com/img/20251109123122181.png)
 
 ### Key Components
