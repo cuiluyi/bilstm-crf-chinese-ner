@@ -1,5 +1,8 @@
+from typing import Tuple, Union
+
 import torch
 import torch.nn as nn
+
 from torchcrf import CRF
 
 
@@ -22,7 +25,11 @@ class BiLSTM(nn.Module):
         self.linear = nn.Linear(hidden_size * 2, output_size)
         self.crf = CRF(output_size, batch_first=True)
 
-    def forward(self, x, labels=None):
+    def forward(
+        self,
+        x: torch.Tensor,
+        labels: torch.Tensor = None,
+    ) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
         """
         x: (batch_size, seq_len)
         tags: (batch_size, seq_len)
